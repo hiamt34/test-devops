@@ -21,13 +21,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Lint
-        run: pnpm run lint || true
+        run: pnpm run lint
       - name: Build
         run: pnpm run build
       - name: Test
         run: pnpm run test || true
+      - name: Notify Discord on failure
+        if: failure()
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ❌ Frontend CI/CD FAILED on ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Workflow: ${{ github.workflow }}
+            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>
       - name: Deploy to server via SSH
-        if: github.ref == 'refs/heads/main'
+        if: success() && github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER }}
@@ -37,4 +48,15 @@ jobs:
           script: |
             cd ${{ secrets.FRONTEND_APP_PATH }}
             git pull origin main
-            make runapp 
+            make runapp
+      - name: Notify Discord on success
+        if: success()
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ✅ Frontend CI/CD SUCCESS on ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Workflow: ${{ github.workflow }}
+            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}> 

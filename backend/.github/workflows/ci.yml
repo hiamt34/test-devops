@@ -9,17 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
@@ -32,13 +21,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Lint
-        run: pnpm run lint || true
+        run: pnpm run lint
       - name: Build
         run: pnpm run build
       - name: Test
         run: pnpm run test
+      - name: Notify Discord on failure
+        if: failure()
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ❌ Backend CI/CD FAILED on ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Workflow: ${{ github.workflow }}
+            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>
       - name: Deploy to server via SSH
-        if: github.ref == 'refs/heads/main'
+        if: success() && github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER }}
@@ -48,4 +48,15 @@ jobs:
           script: |
             cd ${{ secrets.BACKEND_APP_PATH }}
             git pull origin main
-            make runapp 
+            make runapp
+      - name: Notify Discord on success
+        if: success()
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ✅ Backend CI/CD SUCCESS on ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Workflow: ${{ github.workflow }}
+            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}> 

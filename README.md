@@ -39,12 +39,16 @@ graph TD
     E --> F[cd app && git pull origin main]
     F --> G[make runapp]
     D -- No --> H[Chỉ kiểm tra, không deploy]
+    C --> I[Notify Discord]
 ```
 
 **Mô tả luồng:**
 - Khi dev push code lên GitHub (hoặc tạo pull request), GitHub Actions sẽ tự động build, test, lint.
 - Nếu code được merge vào nhánh `main`, CI/CD sẽ SSH vào server, pull code mới nhất về, và chạy `make runapp` để khởi động lại app.
 - Nếu không phải nhánh main, chỉ kiểm tra code, không deploy lên server.
+- **CI/CD sẽ gửi thông báo về Discord:**
+  - Nếu build/lint/test lỗi: gửi noti lỗi
+  - Nếu thành công: gửi noti thành công
 
 ---
 
