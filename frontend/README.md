@@ -1,69 +1,56 @@
-# React + TypeScript + Vite
+# Frontend - Mini LMS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1. Yêu cầu môi trường
 
-Currently, two official plugins are available:
+- **Node.js** >= 18
+- **pnpm** >= 8
+- **Docker** >= 20.10 (nếu chạy bằng Docker)
+- **docker-compose** >= 1.29 (nếu chạy bằng Docker)
+- **Git**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 2. Cài đặt & Chạy Local
 
-## Expanding the ESLint configuration
+```bash
+# Clone code
+cd frontend
+pnpm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Tạo file .env (xem ví dụ .env.example hoặc README tổng)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Chạy dev
+pnpm run dev
+```
+- Ứng dụng sẽ chạy tại: http://localhost:5173/
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 3. Chạy bằng Docker
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd frontend
+# Sử dụng docker-compose.yml riêng cho frontend
+# (hoặc dùng docker compose ở root để chạy cả hệ thống)
+docker compose up -d
+```
+- FE mặc định: http://localhost:5173/
+
+## 4. Test
+
+```bash
+# Chạy test (nếu có)
+pnpm run test
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 5. CI/CD
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Đã cấu hình GitHub Actions:
+  - Tự động build, lint, test khi push/pull request.
+  - Nếu thành công, tự động deploy lên server qua SSH, pull code, chạy lại app bằng Makefile.
+  - Bất kỳ lỗi nào (build, test, deploy) đều gửi thông báo về Discord.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 6. Các lệnh Makefile
+
+- `make build` – Cài đặt và build frontend
+- `make runapp` – Chạy frontend bằng Docker Compose
+- `make stopapp` – Dừng frontend Docker Compose
+
+## 7. Tham khảo thêm
+- Xem README.md ở thư mục gốc để biết hướng dẫn tổng thể, CI/CD, seed, cấu hình môi trường, data mẫu, backend...
