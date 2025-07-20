@@ -33,17 +33,17 @@ BE: http://localhost:3000/
 ```mermaid
 graph TD
     A[Dev push code lên GitHub] --> B[GitHub Actions CI/CD]
-    B --> C[Build, Test, Lint]
-    C --> D{Nhánh main?}
-    D -- No --> E[Chỉ kiểm tra, không deploy]
-    E --> F[Notify Discord (success/fail)]
-    D -- Yes --> G[SSH vào server]
-    G --> H[cd app && git pull origin main]
-    H --> I[make runapp]
-    I --> J[Notify Discord (success/fail)]
-    C --> K[Notify Discord (fail)]
-    G --> L[Notify Discord (fail)]
-    H --> M[Notify Discord (fail)]
+        B --> C[Build, Test, Lint]
+        C --> D{Nhánh main?}
+        D -- No --> E[Chỉ kiểm tra, không deploy]
+        E --> F[Notify Discord success/fail]
+        D -- Yes --> G[SSH vào server]
+        G --> H[cd app && git pull origin main]
+        H --> I[make runapp]
+        I --> J[Notify Discord success/fail]
+        C --> K[Notify Discord fail]
+        G --> L[Notify Discord fail]
+        H --> M[Notify Discord fail]
 ```
 
 **Mô tả luồng:**
