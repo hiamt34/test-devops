@@ -35,11 +35,15 @@ graph TD
     A[Dev push code lên GitHub] --> B[GitHub Actions CI/CD]
     B --> C[Build, Test, Lint]
     C --> D{Nhánh main?}
-    D -- Yes --> E[SSH vào server]
-    E --> F[cd app && git pull origin main]
-    F --> G[make runapp]
-    D -- No --> H[Chỉ kiểm tra, không deploy]
-    C --> I[Notify Discord]
+    D -- No --> E[Chỉ kiểm tra, không deploy]
+    E --> F[Notify Discord (success/fail)]
+    D -- Yes --> G[SSH vào server]
+    G --> H[cd app && git pull origin main]
+    H --> I[make runapp]
+    I --> J[Notify Discord (success/fail)]
+    C --> K[Notify Discord (fail)]
+    G --> L[Notify Discord (fail)]
+    H --> M[Notify Discord (fail)]
 ```
 
 **Mô tả luồng:**
