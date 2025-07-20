@@ -47,8 +47,26 @@ graph TD
 - Nếu code được merge vào nhánh `main`, CI/CD sẽ SSH vào server, pull code mới nhất về, và chạy `make runapp` để khởi động lại app.
 - Nếu không phải nhánh main, chỉ kiểm tra code, không deploy lên server.
 - **CI/CD sẽ gửi thông báo về Discord:**
-  - Nếu build/lint/test lỗi: gửi noti lỗi
-  - Nếu thành công: gửi noti thành công
+  - Nếu bất kỳ bước nào (build, lint, test, deploy) lỗi: gửi noti lỗi
+  - Nếu toàn bộ pipeline thành công: gửi noti thành công
+
+**Ví dụ nội dung thông báo Discord:**
+- Thành công:
+  ```
+  ✅ Backend CI/CD SUCCESS on <repo>
+  Commit: <sha>
+  Author: <actor>
+  Workflow: <workflow>
+  <link tới run>
+  ```
+- Thất bại (bất kỳ bước nào):
+  ```
+  ❌ Backend CI/CD FAILED on <repo>
+  Commit: <sha>
+  Author: <actor>
+  Workflow: <workflow>
+  <link tới run>
+  ```
 
 ---
 

@@ -26,17 +26,6 @@ jobs:
         run: pnpm run build
       - name: Test
         run: pnpm run test
-      - name: Notify Discord on failure
-        if: failure()
-        uses: Ilshidur/action-discord@master
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            ❌ Backend CI/CD FAILED on ${{ github.repository }}
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-            Workflow: ${{ github.workflow }}
-            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>
       - name: Deploy to server via SSH
         if: success() && github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v1.0.3
@@ -49,14 +38,26 @@ jobs:
             cd ${{ secrets.BACKEND_APP_PATH }}
             git pull origin main
             make runapp
-      - name: Notify Discord on success
-        if: success()
-        uses: Ilshidur/action-discord@master
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            ✅ Backend CI/CD SUCCESS on ${{ github.repository }}
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-            Workflow: ${{ github.workflow }}
-            <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}> 
+    # Always run this step to notify Discord if the job failed
+    - name: Notify Discord on failure (any step)
+      if: failure()
+      uses: Ilshidur/action-discord@master
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        message: |
+          ❌ Backend CI/CD FAILED on ${{ github.repository }}
+          Commit: ${{ github.sha }}
+          Author: ${{ github.actor }}
+          Workflow: ${{ github.workflow }}
+          <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>
+    - name: Notify Discord on success
+      if: success()
+      uses: Ilshidur/action-discord@master
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        message: |
+          ✅ Backend CI/CD SUCCESS on ${{ github.repository }}
+          Commit: ${{ github.sha }}
+          Author: ${{ github.actor }}
+          Workflow: ${{ github.workflow }}
+          <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}> 
